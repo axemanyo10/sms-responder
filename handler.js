@@ -6,7 +6,7 @@ const generateResponse = (input) => {
   if(input.Body == "Hello") {
     twiml.message('Well Done');
   } else {
-    twiml.message('Bad');
+    twiml.message('Bad!');
   }
   return twiml.toString();
 };
