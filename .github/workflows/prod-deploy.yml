@@ -1,0 +1,23 @@
+on:
+  push:
+    branches:
+      - master
+name: Deploy master branch
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.0.0
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    - run: npm install 
+    - run: npx serverless deploy --stage prod -v
+    - run: npx -p twilio-cli twilio phone-numbers:update $MOBILE_NUMBER_PROD --sms-url=$(npx serverless info --stage prod | grep -ow https.*)
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+      MOBILE_NUMBER_PROD: ${{ secrets.MOBILE_NUMBER_PROD }}

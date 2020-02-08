@@ -4,7 +4,7 @@ const querystring = require('querystring');
 const generateResponse = (input) => {
   const twiml = new MessagingResponse();
   if(input.Body == "Hello") {
-    twiml.message('Well Done');
+    twiml.message('Well Done - Production');
   } else {
     twiml.message('Bad!');
   }
