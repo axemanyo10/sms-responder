@@ -3,17 +3,11 @@ const querystring = require('querystring');
 
 const generateResponse = (input) => {
   const twiml = new MessagingResponse();
-  if(input.Body == "Hello") {
-    twiml.message('Well Done - Production');
-  } else {
-    twiml.message('Bad!');
-  }
+  twiml.message('Hello from the ' + process.env.DEPLOY_ENV + ' environment! You said "' + input.Body + '"');
   return twiml.toString();
 };
 
 module.exports.hello = async event => {
-  console.log(event.body);
-  console.log(querystring.parse(event.body));
   return {
     statusCode: 200,
     headers: {'Content-Type': 'text/xml'},
