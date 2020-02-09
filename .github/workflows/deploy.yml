@@ -1,21 +1,13 @@
 on:
   push:
     branches:
-      - master
-      - dev
+      - demo
 name: Deploy app to AWS and register API endpoint with SMS provider
 jobs:
   deploy:
     name: deploy
     runs-on: ubuntu-latest
     steps:
-    - run: echo ::set-env name=ENVIRONMENT::"prod"
-      if: endsWith(github.ref, '/master')
-    - run: echo ::set-env name=ENVIRONMENT::"dev"
-      if: endsWith(github.ref, '/dev')
-    - run: echo ::set-env name=TWILIO_ACCOUNT_SID::$([ $ENVIRONMENT == "prod" ] && echo ${{ secrets.TWILIO_ACCOUNT_SID_PROD }} || echo ${{ secrets.TWILIO_ACCOUNT_SID_DEV }})
-    - run: echo ::set-env name=TWILIO_AUTH_TOKEN::$([ $ENVIRONMENT == "prod" ] && echo ${{ secrets.TWILIO_AUTH_TOKEN_PROD }} || echo ${{ secrets.TWILIO_AUTH_TOKEN_DEV }})
-    - run: echo ::set-env name=MOBILE_NUMBER::$([ $ENVIRONMENT == "prod" ] && echo ${{ secrets.MOBILE_NUMBER_PROD }} || echo ${{ secrets.MOBILE_NUMBER_DEV }})
     - uses: actions/checkout@v2.0.0
     - uses: actions/setup-node@v1
       with:
@@ -26,3 +18,7 @@ jobs:
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID_DEV }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN_DEV }}
+      MOBILE_NUMBER: ${{ secrets.MOBILE_NUMBER_DEV }}
+      ENVIRONMENT: dev
