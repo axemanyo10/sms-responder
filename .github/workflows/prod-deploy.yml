@@ -2,22 +2,27 @@ on:
   push:
     branches:
       - master
-name: Deploy master branch
+      - dev
+name: Deploy app to AWS and register API endpoint with SMS provider
 jobs:
   deploy:
     name: deploy
     runs-on: ubuntu-latest
     steps:
+    - run: echo ::set-env name=ENVIRONMENT::"prod"
+      if: endsWith(github.ref, '/master')
+    - run: echo ::set-env name=ENVIRONMENT::"dev"
+      if: endsWith(github.ref, '/dev')
+    - run: echo ::set-env name=TWILIO_ACCOUNT_SID::$([ $ENVIRONMENT == "prod" ] && echo ${{ secrets.TWILIO_ACCOUNT_SID_PROD }} || echo ${{ secrets.TWILIO_ACCOUNT_SID_DEV }})
+    - run: echo ::set-env name=TWILIO_AUTH_TOKEN::$([ $ENVIRONMENT == "prod" ] && echo ${{ secrets.TWILIO_AUTH_TOKEN_PROD }} || echo ${{ secrets.TWILIO_AUTH_TOKEN_DEV }})
+    - run: echo ::set-env name=MOBILE_NUMBER::$([ $ENVIRONMENT == "prod" ] && echo ${{ secrets.MOBILE_NUMBER_PROD }} || echo ${{ secrets.MOBILE_NUMBER_DEV }})
     - uses: actions/checkout@v2.0.0
     - uses: actions/setup-node@v1
       with:
         node-version: 12.x
     - run: npm install 
-    - run: npx serverless deploy --stage prod -v
-    - run: npx -p twilio-cli twilio phone-numbers:update $MOBILE_NUMBER_PROD --sms-url=$(npx serverless info --stage prod | grep -ow https.*)
+    - run: npx serverless deploy --stage $ENVIRONMENT -v
+    - run: npx -p twilio-cli twilio phone-numbers:update $MOBILE_NUMBER --sms-url=$(npx serverless info --stage $ENVIRONMENT | grep -ow https.*)
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
-      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-      MOBILE_NUMBER_PROD: ${{ secrets.MOBILE_NUMBER_PROD }}
