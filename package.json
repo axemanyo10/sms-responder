@@ -1,0 +1,24 @@
+{
+  "name": "serverless1",
+  "version": "1.0.0",
+  "description": "sms responder",
+  "main": "handler.js",
+  "dependencies": {
+    "querystring": "^0.2.0",
+    "twilio": "^3.39.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axemanyo10/sms-responder.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/axemanyo10/sms-responder/issues"
+  },
+  "homepage": "https://github.com/axemanyo10/sms-responder#readme"
+}
